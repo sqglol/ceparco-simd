@@ -38,6 +38,9 @@
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nasm -f win64 ymm_max.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ymm_max.obj</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nasm -f win64 ymm_max.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ymm_max.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +49,7 @@
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nasm -f win64 xmm_max.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xmm_max.obj</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">

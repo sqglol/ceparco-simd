@@ -10,19 +10,18 @@ ymm_max:
     MOV RBP, RSP
     ADD RBP, 16
 
-    SUB RCX, 8
-
     ; Initialize index to 0
     XOR RSI, RSI
 
     ; Get address in 5th parameter
     MOV RBX, [RBP+32]
 
-    L1:     VMOVDQU YMM0, [RDX+RSI*4] ; A[i]
-            VMOVDQU YMM1, [R8+RSI*4]  ; B[i]
+    L1:     VMOVDQU YMM0, [RDX+RSI*4] ; A[i] ~ A[i + 8]
+            VMOVDQU YMM1, [R8+RSI*4]  ; B[i] ~ B[i + 8]
             VMAXPS YMM0, YMM1
-            VMOVDQU [R9+RSI*4], YMM0
+            VMOVDQU [R9+RSI*4], YMM0  ; C[i] ~ C[i + 8]
 
+            ; Compare each element
             VCMPPS YMM2, YMM0, YMM1, 0
             VPAND YMM2, YMM2, [ones]
             VMOVDQU [RBX+RSI*4], YMM2
@@ -32,25 +31,6 @@ ymm_max:
             JL L1
 
     ADD RCX, 8
-
-    ; handle boundary cases
-    ; to avoid corrupting memory near the array
-
-    L2:     MOVSS XMM0, [RDX+4*RSI]
-            MOVSS XMM1, [R8+4*RSI]
-            UCOMISS XMM0, XMM1
-            JB LESS
-
-            MOVSS [R9+4*RSI], XMM0
-            MOV dword[RBX+4*RSI], 0
-            JMP NEXT
-
-    LESS:   MOVSS [R9+4*RSI], XMM1 
-            MOV dword[RBX+4*RSI], 1
-
-    NEXT:   INC RSI
-            CMP RSI, RCX
-            JL L2
 
     POP RBP
     RET
