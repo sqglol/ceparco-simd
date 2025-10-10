@@ -10,11 +10,12 @@
 #define FG_CYAN "\x1b[0;36m"
 #define RESET "\x1b[0m"
 
-//Prints the first and last 5 elements of any array
+// Prints the first and last 5 elements of any array
 #define print_array(type, n, arr, fmt) \
     do { \
         size_t i; \
         type *array = (type *)arr; \
+        printf("["); \
         for (i = 0; i < 5; i++) { \
             printf(fmt, array[i]); \
         } \
@@ -22,7 +23,7 @@
         for (i = n - 5; i < n; i++) { \
             printf(fmt, array[i]); \
         } \
-        printf("\n"); \
+        printf("\b\b]\n"); \
     } while (0)
 
 typedef void (*kernel_t)(size_t, float[], float[], float[], int[]);
@@ -96,8 +97,10 @@ void measure_time(const char* name, kernel_t kernel, size_t n, float A[], float 
     // Average the execution time
     execution_time = execution_time / i;
 
-    print_array(float, n, C, "%f ");
-    print_array(int, n, idx, "%d ");
+    printf("C = ");
+    print_array(float, n, C, "%.2f, ");
+    printf("idx = ");
+    print_array(int, n, idx, "%d, ");
 
     printf("Average execution time (30 runs): %f ms\n\n", execution_time);
 }
@@ -146,8 +149,12 @@ int main() {
     int* idx = (int*) malloc(size * sizeof(float));
 
     // Prints INput arrays
-    print_array(float, size, A, "%f ");
-    print_array(float, size, B, "%f ");
+    printf("A = ");
+    print_array(float, size, A, "%.2f, ");
+    printf("B = ");
+    print_array(float, size, B, "%.2f, ");
+
+    printf("\nExecuting...\n\n");
 
     // Measure execution time per implementation
     measure_time("C", & C_max, size, A, B, C, idx);
