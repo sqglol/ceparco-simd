@@ -1,1 +1,8 @@
 # ceparco-simd
+
+| Kernel Version | 2^20 | 2^26 | 2^28 |
+| :------ | :----------: | :----------: | --------: |
+| C   | <img width="732" height="88" alt="image" src="https://github.com/user-attachments/assets/20885f45-34d2-4dc4-88e1-4eab3472dd62" /> | <img width="690" height="87" alt="image" src="https://github.com/user-attachments/assets/acb3ba44-44b2-4ef5-ba32-6ba59333b0c7" /> | <img width="764" height="90" alt="image" src="https://github.com/user-attachments/assets/3a67af6e-b6b0-4a6b-adc0-0a080869706c" /> |
+| ASM | <img width="762" height="86" alt="image" src="https://github.com/user-attachments/assets/add99cba-fd92-4bfe-9415-0689bed25d21" /> | <img width="709" height="85" alt="image" src="https://github.com/user-attachments/assets/4d079caf-d0bb-477a-a4c5-48c2d4ad530d" /> | <img width="782" height="87" alt="image" src="https://github.com/user-attachments/assets/b839806f-1a87-425a-a586-a6f4674809e8" /> |
+| XMM | <img width="738" height="85" alt="image" src="https://github.com/user-attachments/assets/b9f3a321-6124-40e3-a7c9-7aa53e748785" /> | <img width="738" height="81" alt="image" src="https://github.com/user-attachments/assets/4076fab5-f3be-418f-a1ef-12bf929f821b" /> | <img width="817" height="83" alt="image" src="https://github.com/user-attachments/assets/6f43f5df-a692-4c10-90fa-60d75f9f3129" /> |
+| Ymm | <img width="740" height="81" alt="image" src="https://github.com/user-attachments/assets/d31044a6-1fe1-43d4-9e36-056090bc19b9" /> | <img width="731" height="83" alt="image" src="https://github.com/user-attachments/assets/926f7b35-faf8-47b5-b243-b4a1c05895e8" /> | <img width="811" height="83" alt="image" src="https://github.com/user-attachments/assets/1fb0a498-5d5e-4e06-b939-56e08e1e7eb1" /> | 
