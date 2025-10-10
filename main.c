@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
@@ -8,6 +9,21 @@
 
 #define FG_CYAN "\x1b[0;36m"
 #define RESET "\x1b[0m"
+
+//Prints the first and last 5 elements of any array
+#define print_array(type, n, arr, fmt) \
+    do { \
+        size_t i; \
+        type *array = (type *)arr; \
+        for (i = 0; i < 5; i++) { \
+            printf(fmt, array[i]); \
+        } \
+        printf("..., "); \
+        for (i = n - 5; i < n; i++) { \
+            printf(fmt, array[i]); \
+        } \
+        printf("\n"); \
+    } while (0)
 
 typedef void (*kernel_t)(size_t, float[], float[], float[], int[]);
 
@@ -32,37 +48,6 @@ void C_max(size_t n, float A[], float B[], float C[], int idx[]) {
             idx[i] = 1;
         }
     }
-}
-
-// Prints the first and last five elements of C and idx
-void print_results(size_t n, float C[], int idx[]) {
-    int i;
-
-    // Print contents of C array
-    printf("C = [");
-
-    for (i = 0; i < 5; i++)
-        printf("%.2f, ", C[i]);
-
-    printf("..., ");
-
-    for (i = n - 5; i < n; i++)
-        printf("%.2f, ", C[i]);
-
-    printf("\b\b] \n");
-
-    // Print contents of idx array
-    printf("idx = [");
-
-    for (i = 0; i < 5; i++)
-        printf("%d, ", idx[i]);
-
-    printf("..., ");
-
-    for (i = n - 5; i < n; i++)
-        printf("%d, ", idx[i]);
-
-    printf("\b\b] \n");
 }
 
 // Dynamically allocates an array of size n and fills it with random float values
@@ -100,7 +85,8 @@ void measure_time(const char* name, kernel_t kernel, size_t n, float A[], float 
     QueryPerformanceCounter(&end);
     interval = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000;
 
-    print_results(n, C, idx);
+    print_array(float, n, C, "%f ");
+    print_array(int, n, idx, "%d ");
 
     printf("Execution time: %f ms\n\n", interval);
 }
@@ -140,6 +126,10 @@ int main() {
     float* B = malloc_rand(size);
     float* C = (float*) malloc(size * sizeof(float));
     int* idx = (int*) malloc(size * sizeof(float));
+
+    // Prints INput arrays
+    print_array(float, size, A, "%f ");
+    print_array(float, size, B, "%f ");
 
     // Measure execution time per implementation
     measure_time("C", & C_max, size, A, B, C, idx);
