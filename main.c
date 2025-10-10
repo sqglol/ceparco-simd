@@ -4,7 +4,7 @@
 // x86-64 implementation, no SIMD
 extern void x86_64_max(int n, float A[], float B[], float C[], int idx[]);
 extern void ymm_max(int n, float A[], float B[], float C[], int idx[]);
-
+extern void xmm_max(int n, float A[], float B[], float C[], int idx[]);
 // Prints the results of the program execution
 // TODO: First and last five only
 void print_results(int n, float C[], int idx[]) {
@@ -64,6 +64,14 @@ int main() {
 
     print_results(n, C, idx);
     printf("YMM, SIMD: %f\n\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    // x86-64 with XMM, SIMD
+    start_time = clock();
+    xmm_max(n, A, B, C, idx);
+    end_time = clock();
+
+    print_results(n, C, idx);
+    printf("XMM, SIMD: %f\n\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     return 0;
 }
