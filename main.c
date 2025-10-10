@@ -86,7 +86,8 @@ float* malloc_rand(size_t n) {
 // windows.h's QueryPerformanceCounter() is more precise than time.h's clock()
 void measure_time(const char* name, kernel_t kernel, size_t n, float A[], float B[], float C[], int idx[]) {
     LARGE_INTEGER frequency, start, end;
-    double interval;
+    double execution_time = 0;
+    int i;
 
     memset(C, 0, n*sizeof(float));
     memset(idx, 0, n*sizeof(int));
@@ -94,25 +95,32 @@ void measure_time(const char* name, kernel_t kernel, size_t n, float A[], float 
     // Display name of kernel
     printf(FG_CYAN "%s\n" RESET, name);
 
-    QueryPerformanceFrequency(&frequency);
-    QueryPerformanceCounter(&start);
+    // Perform the test 30 times
+    for (i = 0; i < 30; i++) {
+        QueryPerformanceFrequency(&frequency);
+        QueryPerformanceCounter(&start);
 
-    // Execute the kernel
-    (*kernel)(n, A, B, C, idx);
+        // Execute the kernel
+        (*kernel)(n, A, B, C, idx);
 
-    QueryPerformanceCounter(&end);
-    interval = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000;
+        QueryPerformanceCounter(&end);
+
+        execution_time += (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000;
+    }
+
+    // Average the execution time
+    execution_time = execution_time / i;
 
     print_results(n, C, idx);
 
-    printf("Execution time: %f ms\n\n", interval);
+    printf("Average execution time (30 runs): %f ms\n\n", execution_time);
 }
 
 int main() {
     size_t size = 0;
     int input;
 
-    printf("Select input size: [1] 2^20 [2] 2^26 [3] 2^30 [4] Manual input: ");
+    printf("Select input size: [1] 2^20 [2] 2^26 [3] 2^28 [4] Manual input: ");
     scanf_s("%d", &input);
 
     if (input == 1 || input == 2 || input == 3) {
@@ -129,9 +137,9 @@ int main() {
         size += 67108864;
         printf("\nInitializing array with ~2^26 elements...\n\n");
         break; 
-    case 3: // 2^30
-        size += 1073741824;
-        printf("\nInitializing array with ~2^30 elements...\n\n");
+    case 3: // 2^28
+        size += 268435456;
+        printf("\nInitializing array with ~2^28 elements...\n\n");
         break; 
     case 4:
         printf("Manual input: ");
