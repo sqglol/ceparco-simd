@@ -1,1 +1,0 @@
-# ceparco-simd
