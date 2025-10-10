@@ -88,6 +88,9 @@ void measure_time(const char* name, kernel_t kernel, size_t n, float A[], float 
     LARGE_INTEGER frequency, start, end;
     double interval;
 
+    memset(C, 0, n*sizeof(float));
+    memset(idx, 0, n*sizeof(int));
+
     // Display name of kernel
     printf(FG_CYAN "%s\n" RESET, name);
 
@@ -109,25 +112,32 @@ int main() {
     size_t size = 0;
     int input;
 
-    printf("Select input size: [1] 2^20 [2] 2^26 [3] 2^30: ");
+    printf("Select input size: [1] 2^20 [2] 2^26 [3] 2^30 [4] Manual input: ");
     scanf_s("%d", &input);
 
-    printf("Set number of extra elements (SIMD boundary test): ");
-    scanf_s("%zu", &size);
+    if (input == 1 || input == 2 || input == 3) {
+        printf("Set number of extra elements (SIMD boundary test): ");
+        scanf_s("%zu", &size);
+    }
 
     switch (input) {
     case 1: // 2^20
-        size = 1048576;
+        size += 1048576;
         printf("\nInitializing array with ~2^20 elements...\n\n");
         break; 
     case 2: // 2^26
-        size = 67108864;
+        size += 67108864;
         printf("\nInitializing array with ~2^26 elements...\n\n");
         break; 
     case 3: // 2^30
-        size = 1073741824;
+        size += 1073741824;
         printf("\nInitializing array with ~2^30 elements...\n\n");
         break; 
+    case 4:
+        printf("Manual input: ");
+        scanf_s("%zu", &size);
+        printf("\nInitializing array with %zu elements...\n\n", size);
+        break;
     default:
         printf("\nInvalid input!");
         return 0; // Terminate the program
