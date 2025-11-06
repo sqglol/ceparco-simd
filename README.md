@@ -2,7 +2,7 @@
 
 
 
-## Performance analysis
+## Table of Execution Times
 
 | :--- | :--- | :--- |
 | x86-64 | 349.7 | |
@@ -19,23 +19,13 @@ For C and AVX kernels, they were timed from the start of their function's execut
 
 ## Observations (SIMD)
 
-### C implementation
+### Result Analysis
 
-The C implementation was a basic if/else branch inside a for loop. The program will linearly go through each pair of elements in the arrays and compare them directly; `C[i]` gets whichever is higher and `idx[i]` gets zero if `A[i] >= B[i]`. As expected, this was the **worst-performing** implementation, as this linear performance compounded with the additional overhead of the C language.
+The execution times across these implementations reveal a clear performance hierarchy driven by parallelism and memory management overhead. The slowest baseline is C, which is significantly improved by basic compiler optimizations. The introduction of SIMD Vectorization provides a massive speedup by processing 4 to 8 floating-point numbers simultaneously on the CPU. However, the very minimal change in performance between XMM and YMM suggests the CPU implementation becomes memory-bound the CPU is waiting for data more than it's executing arithmetic.
 
-### x86-64 assembly implementation (no SIMD)
+The shift to the GPU delivers the most dramatic gains, with the highly optimized CUDA classic memCPY achieving the fastest time. This showcases the immense power of the GPU's thousands of threads, which easily outweighs the overhead of two explicit memory transfers (Host to Device and Device to Host). In contrast, the unoptimized CUDA implementation is significantly slower. This high overhead is primarily due to page-faulting the GPU incurring latency as it fetches data pages on demand from the CPU memory upon first access, this is fixed by the mor eoptimized implementations, shown by the fact that not only is the kernal time significantly faster, the transfer time from Host to Device is also not included with the total execution time.
 
-The x86-64 assembly implementation without SIMD was fundamentally very similar to the C implementation and thus shares its linear performance, as it still checks every pair of elements in order. It performed slightly better than C, as it did not have the aforementioned program overhead.
-
-### x86-64 assembly implementation (XMM)
-
-The x86-64 assembly implementation using XMM registers performed much better than the non-SIMD implementation. Here, the program goes through four elements at a time instead of one. The `VMAXPS` instruction efficiently stores the max elements in its two operand vectors into a destination vector, in this case `XMM0`. Then, we opted to use the `VCMPPS` instruction with a predicate of `0` to compare this new vector with the `B` vector to implement the behavior when checking for `A[i] >= B[i]`.
-
-In cases where the input vector size is not a multiple of 4, allowing the SIMD implementations to keep going will result in writing to memory that is out of bounds, which *may* cause unpredictable behavior. This was addressed with a simple solution: when there are less than four elements remaining, the program switches to the SIMD-less implementation for the remaining elements (that is, performing a linear search).
-
-### x86-64 assembly implementation (YMM)
-
-The x86-64 assembly implementation using YMM registers, in all cases, performed very closely to the XMM implementation, but **slightly worse**. YMM **theoretically** offers twice the throughput as the XMM approach, as YMM can hold eight single-precision values as opposed to four. However, numerous possible explanations exist for why the YMM approach may have been slower, e.g. [additional latency introduced by the higher-order 128 bits in 256-bit register-to-register transfers](https://stackoverflow.com/a/60173277). This is likely processor-dependent, and may not be the case for all machines. Note that the YMM implementation used the same handling of boundary cases as with the XMM implementation, but with 8 instead of 4.
+The data demonstrates that Unified Memory requires explicit optimization to be competitive. Simply using CUDA Prefetch reduces the time by eliminating runtime page faults, and the combination of Prefetch, page creation, and memAdvise further lowers the time. This optimized Unified Memory performance is almost identical to the Classic MemCopy method, confirming that memory management overhead can be minimized with fine-grained control. Finally, Data initialization in a CUDA kernel is inefficient suggesting that the overhead of using the GPU's Random Number Generator is significantly greater than simply having the CPU initialize the data and then transferring it via cudaMemcpy.
 
 
 ## Observations (CUDA)
