@@ -4,16 +4,18 @@
 
 ## Table of Execution Times
 
-| :--- | :--- | :--- |
-| x86-64 | 349.7 | |
-| X86-64 SIMD XMM | | |
-| x86-64 SIMD YMM | | |
-| CUDA Unified | | |
-| CUDA Prefetch | | |
-| CUDA Prefetch+page creation | | |
-| CUDA Prefetch+Page creitition+memadvise | | |
-| CUDA classic MEMCPY | | |
-| CUDA data init in a CUDA kernel | | |
+| Implementation | Kernel Time (s) | Times Faster than C |
+|:---|:---|:---|
+| c | 1866.88 | 1.00 |
+| 86-64 | 1367.02 | 1.37 |
+| X86-64 SIMD XMM | 273.56 | 6.82 |
+| x86-64 SIMD YMM | 263.85 | 7.08 |
+| CUDA Unified | 1813.06 | 1.03 |
+| CUDA Prefetch | 191.20 | 9.76 |
+| CUDA Prefetch+page creation | 24.16 | 77.26 |
+| CUDA Prefetch+page creation+memadvise | 22.62 | 82.53 |
+| CUDA classic MEMCPY | 7415.40 | 0.25 |
+| CUDA data init in a CUDA kernel | 1399.53 | 1.33 |
 
 For C and AVX kernels, they were timed from the start of their function's execution until they returned. For all implementations except grid-stride loop, the total host-to-device transfer time is not included in the final estimate of the overall execution time as the data has already been prefetched and transferred into the GPU by the time the kernel is executed. This can be viewed in the Nsight Systems reports; for these implementations, **no further host-to-device transfers occur during and after the period in which the kernel is executed ten times**. Classic MEMCPY required hefty host-to-device and device-to-host transfers, while initializing the array within the CUDA device meant that we only needed to transfer from the device to the host *after* the program's execution.
 
